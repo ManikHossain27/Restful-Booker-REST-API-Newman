@@ -37,40 +37,40 @@ npm install -g newman-reporter-htmlextra
 
 ## Test case list:
 1. ### Create Booking
-	  1. > Create Data Sets using csv file
-	  2. > Verify Status code is 200
+	1. > Create Data Sets using csv file
+	2. > Verify Status code is 200
 2. ### Booking Status
-  > In the test case you need to validate the following field values:
-	  1. > First Name
-	  2. > Last Name
-	  3. > Total Price
-	  4. > Deposit Paid
-	  5. > Checkin Date
-	  6. > Checkout Date
-	  7. > Additional Needs
-	  8. > Response Time below 350ms
+	> In the test case you need to validate the following field values:
+	1. > First Name
+	2. > Last Name
+	3. > Total Price
+	4. > Deposit Paid
+	5. > Checkin Date
+	6. > Checkout Date
+	7. > Additional Needs
+	8. > Response Time below 350ms
 
 3. ### Token
-  > Generate Token
+	> Generate Token
   
 4. ### Update Booking
-  > In the test case you need to validate the following field values:
-	  1. > Successfull message
-	  2. > Response Time below 350ms
+	> In the test case you need to validate the following field values:
+	1. > Successfull message
+	2. > Response Time below 350ms
 
 5. ### Booking Status after Update
-  > In the test case you need to validate the following field values:
-	  1. > First Name
-	  2. > Last Name
-	  3. > Total Price
-	  4. > Deposit Paid
-	  5. > Checkin Date
-	  6. > Checkout Date
-	  7. > Additional Needs
-	  8. > Response Time below 350ms 
+	> In the test case you need to validate the following field values:
+	1. > First Name
+	2. > Last Name
+	3. > Total Price
+	4. > Deposit Paid
+	5. > Checkin Date
+	6. > Checkout Date
+	7. > Additional Needs
+	8. > Response Time below 350ms 
 
 6. ### Delete Booking
-> Verify Status code
+	> Verify Status code
 
 
 ## Newman Report Summary:
