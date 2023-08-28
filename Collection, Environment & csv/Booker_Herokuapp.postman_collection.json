@@ -1,0 +1,613 @@
+{
+	"info": {
+		"_postman_id": "f67ac2c5-888e-45dc-962c-9f9f907251a2",
+		"name": "Booker_Herokuapp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26899722"
+	},
+	"item": [
+		{
+			"name": "Create Booking",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//first name set \r",
+							"var firstName = pm.variables.replaceIn(\"{{$randomFirstName}}\");\r",
+							"pm.environment.set(\"firstname\", firstName);\r",
+							"\r",
+							"//lastname set \r",
+							"var lastname = pm.variables.replaceIn(\"{{$randomLastName}}\");\r",
+							"pm.environment.set(\"lastname\", lastname);\r",
+							"\r",
+							"//totalprice set \r",
+							"var totalprice = pm.variables.replaceIn(\"{{$randomInt}}\");\r",
+							"pm.environment.set(\"totalprice\", totalprice);\r",
+							"\r",
+							"//depositpaid set \r",
+							"var depositpaid = pm.variables.replaceIn(\"{{$randomBoolean}}\");\r",
+							"pm.environment.set(\"depositpaid\", depositpaid);\r",
+							"\r",
+							"//depositpaid set \r",
+							"var additionalneeds = pm.variables.replaceIn(\"{{$randomProduct}}\");\r",
+							"pm.environment.set(\"additionalneeds\", additionalneeds);\r",
+							"\r",
+							"//Date \r",
+							"const moment = require('moment');\r",
+							"const today = moment();\r",
+							"pm.environment.set(\"checkin\", today.format(\"YYYY-MM-DD\"))\r",
+							"pm.environment.set(\"checkout\", today.add(2, 'day').format(\"YYYY-MM-DD\"))\r",
+							"\r",
+							"//print checkin\r",
+							"console.log(\"Today: \" + today.format(\"YYYY-MM-DD\"));\r",
+							"//print checkout after 1 day\r",
+							"console.log(\"Tomorrow \" + today.add(1, 'day').format(\"YYYY-MM-DD\"));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var resBody = pm.response.json();\r",
+							"//set bookingid\r",
+							"pm.environment.set(\"bookingid\", resBody.bookingid);\r",
+							"\r",
+							"var response = responseCode.code;\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        pm.test(\"Verify Status Code is 200\", function () {\r",
+							"            pm.response.to.have.status(200);\r",
+							"        });\r",
+							"        break;\r",
+							"    case 201:\r",
+							"        var resBody = pm.response.json()\r",
+							"\r",
+							"        pm.test(\"You have successfully create the student record.\");\r",
+							"\r",
+							"        //pm.environment.set(\"bookingid\", resBody.bookingid);\r",
+							"        \r",
+							"        pm.environment.set(\"bookingid\", resBody.bookingid);\r",
+							"        \r",
+							"        pm.test(\"Verify Response time is less than 350ms\", function () {//service lavel Aggrement = SLA\r",
+							"            pm.expect( pm.response.responseTime ).to.be.below( 350 )\r",
+							"        });\r",
+							"\r",
+							"        // //Headers Test\r",
+							"        // pm.test(\"Verify Date Key is present in Response Header\", function() {\r",
+							"        //     pm.response.to.have.header(\"Date\");\r",
+							"        // });\r",
+							"\r",
+							"        // pm.test(\"Verify Server Key's Value is \" + pm.response.headers.get( \"Server\" ) + \" in Response Header\", function() {\r",
+							"        //     pm.expect( \"Cowboy\" ).to.equal( pm.response.headers.get( \"Server\" ) );\r",
+							"        // });\r",
+							"        \r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"firstname\": \"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}\",\r\n\t\"totalprice\": {{totalprice}},\r\n\t\"depositpaid\": {{depositpaid}},\r\n\t\"bookingdates\": {\r\n    \t\"checkin\": \"{{checkin}}\",\r\n    \t\"checkout\": \"{{checkout}}\"\r\n\t},\r\n\t\"additionalneeds\": \"{{additionalneeds}}\"\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/booking/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"booking",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Booking Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var resBody = pm.response.json()\r",
+							"       \r",
+							"        pm.test(\"Verify first Name \" + resBody.firstname + \" is equal to \" + pm.iterationData.get(\"firstname\"), function(){\r",
+							"        pm.expect(resBody.firstname).to.equal(pm.iterationData.get(\"firstname\"));\r",
+							"        })\r",
+							"        pm.test(\"Verify last Name \" + resBody.lastname + \" is equal to \" + pm.iterationData.get(\"lastname\"), function(){\r",
+							"            pm.expect(resBody.lastname).to.equal(pm.iterationData.get(\"lastname\"));\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify totalprice \" + resBody.totalprice + \" is equal to \" + pm.iterationData.get(\"totalprice\"), function(){\r",
+							"            pm.expect(resBody.totalprice).to.equal(parseInt( pm.iterationData.get(\"totalprice\") ));       //ParseInt convert string data to int data\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify depositpaid \" + resBody.depositpaid + \" is equal to \" + pm.iterationData.get(\"depositpaid\"), function(){\r",
+							"            //pm.expect( (resBody.depositpaid ).toString()  ).to.equal( pm.iterationData.get(\"depositpaid\") );\r",
+							"            pm.expect( resBody.depositpaid  ).to.equal( JSON.parse(pm.iterationData.get(\"depositpaid\") )); //JSON.parse converts string to boolean\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify Checkin Date \" + resBody.bookingdates.checkin + \" is equal to \" + pm.iterationData.get(\"checkin\"), function(){\r",
+							"            pm.expect(resBody.bookingdates.checkin).to.equal(pm.iterationData.get(\"checkin\"));\r",
+							"        })\r",
+							"        pm.test(\"Verify Checkout Date \" + resBody.bookingdates.checkout + \" is equal to \" + pm.iterationData.get(\"checkout\"), function(){\r",
+							"            pm.expect(resBody.bookingdates.checkout).to.equal(pm.iterationData.get(\"checkout\"));\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify additionalneeds \" + resBody.additionalneeds + \" is equal to \" + pm.iterationData.get(\"additionalneeds\"), function(){\r",
+							"            pm.expect(resBody.additionalneeds).to.equal(pm.iterationData.get(\"additionalneeds\"));\r",
+							"        })\r",
+							"            \r",
+							"        pm.test(\"Verify Response time is less than 350ms\", function () {//service lavel Aggrement = SLA\r",
+							"            pm.expect( pm.response.responseTime ).to.be.below( 350 )\r",
+							"        });\r",
+							"        \r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/booking/{{bookingid}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"booking",
+						"{{bookingid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//store a variable in Environment\r",
+							"var resBody = pm.response.json();\r",
+							"pm.environment.set(\"token\", resBody.token);\r",
+							"\r",
+							"\r",
+							"var response = responseCode.code;\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        pm.test(\"Verify Status Code is 200\", function () {\r",
+							"            pm.response.to.have.status(200);\r",
+							"        });\r",
+							"        break;\r",
+							"    case 201:\r",
+							"        var resBody = pm.response.json()\r",
+							"       \r",
+							"        pm.test(\"You have successfully create the Token.\");\r",
+							"        pm.environment.set(\"token\", resBody.token);\r",
+							"        \r",
+							"        pm.test(\"Verify Response time is less than 350ms\", function () {//service lavel Aggrement = SLA\r",
+							"            pm.expect( pm.response.responseTime ).to.be.below( 350 )\r",
+							"        });        \r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\": \"admin\",\r\n\t\"password\": \"password123\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/auth",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Booking",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//first name set \r",
+							"var firstName = pm.variables.replaceIn(\"{{$randomFirstName}}\");\r",
+							"pm.environment.set(\"firstname\", firstName);\r",
+							"\r",
+							"//lastname set \r",
+							"var lastname = pm.variables.replaceIn(\"{{$randomLastName}}\");\r",
+							"pm.environment.set(\"lastname\", lastname);\r",
+							"\r",
+							"//totalprice set \r",
+							"var totalprice = pm.variables.replaceIn(\"{{$randomInt}}\");\r",
+							"pm.environment.set(\"totalprice\", totalprice);\r",
+							"\r",
+							"//depositpaid set \r",
+							"var depositpaid = pm.variables.replaceIn(\"{{$randomBoolean}}\");\r",
+							"pm.environment.set(\"depositpaid\", depositpaid);\r",
+							"\r",
+							"//depositpaid set \r",
+							"var additionalneeds = pm.variables.replaceIn(\"{{$randomProduct}}\");\r",
+							"pm.environment.set(\"additionalneeds\", additionalneeds);\r",
+							"\r",
+							"//Date \r",
+							"const moment = require('moment');\r",
+							"const today = moment();\r",
+							"pm.environment.set(\"checkin\", today.format(\"YYYY-MM-DD\"))\r",
+							"pm.environment.set(\"checkout\", today.add(1, 'day').format(\"YYYY-MM-DD\"))\r",
+							"\r",
+							"//print checkin\r",
+							"console.log(today.format(\"YYYY-MM-DD\"));\r",
+							"//print checkout after 1 day\r",
+							"console.log(today.add(1, 'day').format(\"YYYY-MM-DD\"));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var resBody = pm.response.json()\r",
+							"\r",
+							"        pm.test(\"You have successfully update the student record.\");\r",
+							"        \r",
+							"        pm.test(\"Verify Response time is less than 350ms\", function () {//service lavel Aggrement = SLA\r",
+							"            pm.expect( pm.response.responseTime ).to.be.below( 350 )\r",
+							"        });\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"firstname\": \"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}\",\r\n\t\"totalprice\": {{totalprice}},\r\n\t\"depositpaid\": {{depositpaid}},\r\n\t\"bookingdates\": {\r\n    \t\"checkin\": \"{{checkin}}\",\r\n    \t\"checkout\": \"{{checkout}}\"\r\n\t},\r\n\t\"additionalneeds\": \"{{additionalneeds}}\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/booking/{{bookingid}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"booking",
+						"{{bookingid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Booking Status After Update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var resBody = pm.response.json()\r",
+							"       \r",
+							"        pm.test(\"Verify first Name \" + resBody.firstname + \" is equal to \" + pm.iterationData.get(\"firstname\"), function(){\r",
+							"            pm.expect(resBody.firstname).to.equal(pm.iterationData.get(\"firstname\"));\r",
+							"        })\r",
+							"        pm.test(\"Verify last Name \" + resBody.lastname + \" is equal to \" + pm.iterationData.get(\"lastname\"), function(){\r",
+							"            pm.expect(resBody.lastname).to.equal(pm.iterationData.get(\"lastname\"));\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify totalprice \" + resBody.totalprice + \" is equal to \" + pm.iterationData.get(\"totalprice\"), function(){\r",
+							"            pm.expect(resBody.totalprice).to.equal(parseInt( pm.iterationData.get(\"totalprice\") ));       //ParseInt convert string data to int data\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify depositpaid \" + resBody.depositpaid + \" is equal to \" + pm.iterationData.get(\"depositpaid\"), function(){\r",
+							"            //pm.expect( (resBody.depositpaid ).toString()  ).to.equal( pm.iterationData.get(\"depositpaid\") );\r",
+							"            pm.expect( resBody.depositpaid  ).to.equal( JSON.parse(pm.iterationData.get(\"depositpaid\") )); //JSON.parse converts string to boolean\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify Checkin Date \" + resBody.bookingdates.checkin + \" is equal to \" + pm.iterationData.get(\"checkin\"), function(){\r",
+							"            pm.expect(resBody.bookingdates.checkin).to.equal(pm.iterationData.get(\"checkin\"));\r",
+							"        })\r",
+							"        pm.test(\"Verify Checkout Date \" + resBody.bookingdates.checkout + \" is equal to \" + pm.iterationData.get(\"checkout\"), function(){\r",
+							"            pm.expect(resBody.bookingdates.checkout).to.equal(pm.iterationData.get(\"checkout\"));\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify additionalneeds \" + resBody.additionalneeds + \" is equal to \" + pm.iterationData.get(\"additionalneeds\"), function(){\r",
+							"            pm.expect(resBody.additionalneeds).to.equal(pm.iterationData.get(\"additionalneeds\"));\r",
+							"        })\r",
+							"            \r",
+							"        pm.test(\"Verify Response time is less than 350ms\", function () {//service lavel Aggrement = SLA\r",
+							"            pm.expect( pm.response.responseTime ).to.be.below( 350 )\r",
+							"        });\r",
+							"        \r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/booking/{{bookingid}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"booking",
+						"{{bookingid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Booking",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = responseCode.code;\r",
+							"\r",
+							"switch (response) { \r",
+							"    case 200:\r",
+							"        var resBody = pm.response.json()\r",
+							"        pm.test(\"You have successfully Delete the Booking Record\", function(){\r",
+							"            pm.expect(resBody.msg).to.eql(\"Delete  data success\")\r",
+							"        })\r",
+							"\r",
+							"        pm.test(\"Verify Response time is less than 350ms\", function () {//service lavel Aggrement = SLA\r",
+							"            pm.expect( pm.response.responseTime ).to.be.below( 350 )\r",
+							"        });\r",
+							"        break;\r",
+							"    \r",
+							"    case 201:\r",
+							"        pm.test(\"Verify Status Code is 201\", function () {\r",
+							"            pm.response.to.have.status(201);\r",
+							"        });\r",
+							"        break;\r",
+							"\r",
+							"    case 400:\r",
+							"        pm.test(\"Bad Request-400\");\r",
+							"        break;\r",
+							"\r",
+							"    case 401:\r",
+							"        pm.test(\"Unable to identify employee\");\r",
+							"        break;\r",
+							"\r",
+							"    case 404:\r",
+							"        pm.test(\"Not Found-404\");\r",
+							"        break;\r",
+							"\r",
+							"    case 500:\r",
+							"        pm.test(\"Internal Server Error -500\");\r",
+							"        break;\r",
+							"    \r",
+							"    case 503:\r",
+							"        pm.test(\"Service Unavailable-503\");\r",
+							"        break;\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/booking/{{bookingid}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"booking",
+						"{{bookingid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "randomFirstname",
+			"value": ""
+		},
+		{
+			"key": "randomLastname",
+			"value": ""
+		},
+		{
+			"value": ""
+		}
+	]
+}
